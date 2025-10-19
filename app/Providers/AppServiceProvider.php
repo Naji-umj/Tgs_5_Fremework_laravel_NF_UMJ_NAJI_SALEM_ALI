@@ -14,7 +14,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // ✅ ربط ملف api.php يدويًا لضمان تحميله دائمًا
         Route::prefix('api')
             ->middleware('api')
             ->group(base_path('routes/api.php'));
