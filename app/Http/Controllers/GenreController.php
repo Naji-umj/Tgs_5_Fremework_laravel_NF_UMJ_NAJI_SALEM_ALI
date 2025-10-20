@@ -10,35 +10,45 @@ class GenreController extends Controller
     public function index()
     {
         $genres = Genre::all();
-
-        if ($genres->isEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Resource data not found!'
-            ], 200);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Get all resources',
-            'data' => $genres
-        ], 200);
+        return response()->json($genres);
     }
 
-    public function store(Request $request)
+    public function show($id)
     {
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json(['message' => 'Data genre tidak ditemukan'], 404);
+        }
+
+        return response()->json($genre);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json(['message' => 'Data genre tidak ditemukan'], 404);
+        }
+
         $request->validate([
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:255',
         ]);
 
-        $genre = Genre::create([
-            'name' => $request->name,
-        ]);
+        $genre->update($request->all());
+        return response()->json(['message' => 'Data genre berhasil diperbarui', 'data' => $genre]);
+    }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Genre added successfully!',
-            'data' => $genre
-        ], 201);
+    public function destroy($id)
+    {
+        $genre = Genre::find($id);
+
+        if (!$genre) {
+            return response()->json(['message' => 'Data genre tidak ditemukan'], 404);
+        }
+
+        $genre->delete();
+        return response()->json(['message' => 'Data genre berhasil dihapus']);
     }
 }

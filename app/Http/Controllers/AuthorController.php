@@ -10,35 +10,45 @@ class AuthorController extends Controller
     public function index()
     {
         $authors = Author::all();
-
-        if ($authors->isEmpty()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Resource data not found!'
-            ], 200);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Get all resources',
-            'data' => $authors
-        ], 200);
+        return response()->json($authors);
     }
 
-    public function store(Request $request)
+    public function show($id)
     {
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json(['message' => 'Data author tidak ditemukan'], 404);
+        }
+
+        return response()->json($author);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json(['message' => 'Data author tidak ditemukan'], 404);
+        }
+
         $request->validate([
-            'name' => 'required|string|max:100',
+            'name' => 'required|string|max:255',
         ]);
 
-        $author = Author::create([
-            'name' => $request->name,
-        ]);
+        $author->update($request->all());
+        return response()->json(['message' => 'Data author berhasil diperbarui', 'data' => $author]);
+    }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Author added successfully!',
-            'data' => $author
-        ], 201);
+    public function destroy($id)
+    {
+        $author = Author::find($id);
+
+        if (!$author) {
+            return response()->json(['message' => 'Data author tidak ditemukan'], 404);
+        }
+
+        $author->delete();
+        return response()->json(['message' => 'Data author berhasil dihapus']);
     }
 }
